@@ -106,6 +106,12 @@ namespace UnityEngine.Perception.GroundTruth
         public bool showVisualizations = true;
 
         /// <summary>
+        /// Toggles saving as JPG/PNG
+        /// </summary>
+        [SerializeField]
+        public bool saveAsJPG = false;
+
+        /// <summary>
         /// The <see cref="CameraLabeler"/> instances which will be run for this PerceptionCamera.
         /// </summary>
         public IReadOnlyList<CameraLabeler> labelers => m_Labelers;
@@ -432,8 +438,9 @@ namespace UnityEngine.Perception.GroundTruth
             // Record the camera's projection matrix
             SetPersistentSensorData("camera_intrinsic", ToProjectionMatrix3x3(cam.projectionMatrix));
 
-            var captureFilename = $"{Manager.Instance.GetDirectoryFor(rgbDirectory)}/{k_RgbFilePrefix}{Time.frameCount}.png";
-            var dxRootPath = $"{rgbDirectory}/{k_RgbFilePrefix}{Time.frameCount}.png";
+            var fileExtension = saveAsJPG ? ".jpg" : ".png";
+            var captureFilename = $"{Manager.Instance.GetDirectoryFor(rgbDirectory)}/{k_RgbFilePrefix}{Time.frameCount}{fileExtension}";
+            var dxRootPath = $"{rgbDirectory}/{k_RgbFilePrefix}{Time.frameCount}{fileExtension}";
             SensorHandle.ReportCapture(dxRootPath, SensorSpatialData.FromGameObjects(
                 m_EgoMarker == null ? null : m_EgoMarker.gameObject, gameObject),
                 m_PersistentSensorData.Select(kvp => (kvp.Key, kvp.Value)).ToArray());
@@ -451,8 +458,16 @@ namespace UnityEngine.Perception.GroundTruth
                     byte[] encodedData;
                     using (s_EncodeAndSave.Auto())
                     {
-                        encodedData = ImageConversion.EncodeArrayToPNG(
-                            dataColorBuffer, GraphicsFormat.R8G8B8A8_UNorm, (uint)width, (uint)height);
+                        if (saveAsJPG)
+                        {
+                            encodedData = ImageConversion.EncodeArrayToJPG(
+                                dataColorBuffer, GraphicsFormat.R8G8B8A8_UNorm, (uint)width, (uint)height);
+                        }
+                        else
+                        {
+                            encodedData = ImageConversion.EncodeArrayToPNG(
+                                dataColorBuffer, GraphicsFormat.R8G8B8A8_UNorm, (uint)width, (uint)height);
+                        }
                     }
 
                     return !FileProducer.Write(captureFilename, encodedData)
