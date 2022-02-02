@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEditorInternal;
 using UnityEngine;
@@ -88,6 +88,8 @@ namespace UnityEditor.Perception.GroundTruth
                 if(perceptionCamera.captureRgbImages)
                 {
                     EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(perceptionCamera.saveAsJPG)),new GUIContent("Save Images as JPG", "Toggle between saving images as JPG (checked) and PNG (unchecked)."));
+                    if (perceptionCamera.saveAsJPG)
+                        EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(perceptionCamera.jpgQuality)), new GUIContent("JPG Quality", "Set JPG file quality level (default 90)."));
                 }
                 EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(perceptionCamera.captureTriggerMode)),new GUIContent("Capture Trigger Mode", $"The method of triggering captures for this camera. In {nameof(CaptureTriggerMode.Scheduled)} mode, captures happen automatically based on a start frame and frame delta time. In {nameof(CaptureTriggerMode.Manual)} mode, captures should be triggered manually through calling the {nameof(perceptionCamera.RequestCapture)} method of {nameof(PerceptionCamera)}."));
 

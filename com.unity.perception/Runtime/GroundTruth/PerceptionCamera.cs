@@ -112,6 +112,12 @@ namespace UnityEngine.Perception.GroundTruth
         public bool saveAsJPG = false;
 
         /// <summary>
+        /// Quality level for JPG files (default 90)
+        /// </summary>
+        [SerializeField]
+        public int jpgQuality = 90;
+
+        /// <summary>
         /// The <see cref="CameraLabeler"/> instances which will be run for this PerceptionCamera.
         /// </summary>
         public IReadOnlyList<CameraLabeler> labelers => m_Labelers;
@@ -461,7 +467,7 @@ namespace UnityEngine.Perception.GroundTruth
                         if (saveAsJPG)
                         {
                             encodedData = ImageConversion.EncodeArrayToJPG(
-                                dataColorBuffer, GraphicsFormat.R8G8B8A8_UNorm, (uint)width, (uint)height);
+                                dataColorBuffer, GraphicsFormat.R8G8B8A8_UNorm, (uint)width, (uint)height, 0, jpgQuality);
                         }
                         else
                         {
